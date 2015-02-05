@@ -44,7 +44,16 @@ function get_and_parse {
 	url=$1
 	regex=$2
 
-	declare -a agents=('Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.56 Safari/536.5' 'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0.1' 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/534.57.2 (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2' 'Opera/9.80 (Windows NT 5.1; U; en) Presto/2.10.229 Version/11.60' 'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)' 'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; en-GB)' 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)' 'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)')
+	declare -a agents=(
+		'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/536.5 (KHTML, like Gecko) Chrome/19.0.1084.56 Safari/536.5'
+		'Mozilla/5.0 (Windows NT 6.1; WOW64; rv:13.0) Gecko/20100101 Firefox/13.0.1'
+		'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_4) AppleWebKit/534.57.2 (KHTML, like Gecko) Version/5.1.7 Safari/534.57.2'
+		'Opera/9.80 (Windows NT 5.1; U; en) Presto/2.10.229 Version/11.60'
+		'Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; WOW64; Trident/5.0)'
+		'Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; en-GB)'
+		'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+		'Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1)'
+	)
 
 	if [ -z url ]; then
 		return
@@ -80,11 +89,11 @@ done
 # Retrofeed with Bing API
 # TODO: implement pagination 
 for IP in ${iplist[@]}; do
-	data=$(get_and_parse "http://www.bing.com/search?q=ip%3A$ip" '<li class="b_algo">(?:<div class="b_title">)?<h2><a href="(https?|ftps?)://\K([^/]*)')
+	data=$(get_and_parse "http://www.bing.com/search?q=ip:$IP" '<li class="b_algo">(?:<div class="b_title">)?<h2><a href="(https?|ftps?)://\K([^/]*)')
 	for name in $data; do
 		# Check correctnesa
 		# TODO: improve with NS or remove it
-		if ( dig "$name" | grep -Pq "IN\tA\t$ip" ); then
+		if ( dig "$name" | grep -Pq "IN\tA\t$IP" ); then
 			add "$IP" "$name"
 		fi
 	done
